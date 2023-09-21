@@ -18,6 +18,8 @@ enum error_type {
     mem_alloc_err = 5656,
     null_ptr_err = 7878,
     out_of_index_err = 1212,
+    stack_is_not_exist = 148814,
+    critical_err = 6666
 };
 
 error_type stack_ctor(Stack* stk);
