@@ -16,7 +16,8 @@ struct Stack {
 enum error_type {
     no_err = 9090,
     mem_alloc_err = 5656,
-    null_ptr_err = 7878
+    null_ptr_err = 7878,
+    out_of_index_err = 1212,
 };
 
 error_type stack_ctor(Stack* stk);
