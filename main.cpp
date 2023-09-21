@@ -15,6 +15,7 @@ int main(void) {
     while (getchar() != 's') {
         //stack_dtor(&stk); //use to brake program, and it will detect it:)
         getchar();
+        Elem_t poped = void_elem;
         printf("type 1 to push elem\ntype 2 to pop stack\n");
         switch(getchar()) {
         case'1':
@@ -24,7 +25,9 @@ int main(void) {
             get_error(stack_push(&stk, a));
             break;
         case'2':
-            get_error(stack_pop(&stk));
+            if(get_error(stack_pop(&stk, &poped)) == no_err)
+                printf("\nPoped element - %d\n", poped);
+
             break;
         default: printf("Wrong key...\n");
         }

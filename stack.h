@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 typedef int Elem_t;
+const int void_elem = 78787;
 
 struct Stack {
     Elem_t* data = NULL;
@@ -24,7 +25,7 @@ enum error_type {
 
 error_type stack_ctor(Stack* stk);
 error_type stack_push(Stack* stk, Elem_t value);
-error_type stack_pop(Stack* stk);
+error_type stack_pop(Stack* stk, Elem_t* poped);
 error_type stack_dtor(Stack* stk);
 error_type dump(Stack* stk);
 error_type get_error(error_type error);
