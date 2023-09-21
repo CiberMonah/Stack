@@ -25,6 +25,7 @@ error_type stack_push(Stack* stk, Elem_t value);
 error_type stack_pop(Stack* stk);
 error_type stack_dtor(Stack* stk);
 error_type dump(Stack* stk);
+error_type get_error(error_type error);
 
 
 #endif // STACK_H_INCLUDED

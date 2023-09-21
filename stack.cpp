@@ -65,3 +65,10 @@ error_type dump(Stack* stk) {
     }
     return no_err;
 }
+
+error_type get_error(error_type error) {
+    if(error == mem_alloc_err) printf("Memory allocation error\n");
+    else if(error == null_ptr_err) printf("Pointer is Null\n");
+    else if(error == out_of_index_err) printf("Index is out of range\n");
+    return no_err;
+}

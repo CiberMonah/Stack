@@ -20,13 +20,10 @@ int main(void) {
             printf("Print element to push:\n");
             Elem_t a;
             scanf("%d", &a);
-            stack_push(&stk, a);
+            get_error(stack_push(&stk, a));
             break;
         case'2':
-            if(stack_pop(&stk) == no_err)
-                printf("Pop succesfuly");
-            else
-                printf("Pop wasnt succesfully");
+            get_error(stack_pop(&stk));
             break;
         default:
             printf("sosi hui");
@@ -36,5 +33,6 @@ int main(void) {
         getchar();
 
     }
+    get_error(stack_dtor(&stk));
     return 0;
 }
