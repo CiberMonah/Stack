@@ -31,7 +31,7 @@ int main(void) {
             break;
         default: printf("Wrong key...\n");
         }
-        dump(&stk);
+        STK_DUMP(&stk);
         getchar();
 
     }

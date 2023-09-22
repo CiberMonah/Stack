@@ -3,6 +3,10 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#define STK_DUMP(stk) ({                                                                                  \
+    printf("Stack is %s, in function: %s, in line: %d\n", __FILE__, __PRETTY_FUNCTION__, __LINE__);       \
+    dump(stk);                                                                                            \
+    })
 
 typedef int Elem_t;
 const int void_elem = 78787;
