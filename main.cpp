@@ -4,13 +4,8 @@
 
 int main(void) {
 
-    Stack stk = {};
-    if(stack_ctor(&stk) == no_err) {
-        printf("Stack created\n");
-    } else {
-        printf("Stack wasnt created!\n");
-        return 1;
-    }
+    Stack stk;
+    STK_CTOR(&stk);
     printf("To stop session press s\n");
     while (getchar() != 's') {
         //stack_dtor(&stk); //use to brake program, and it will detect it:)
