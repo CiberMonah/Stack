@@ -83,6 +83,9 @@ error_type stack_dump(Stack* stk, const char* file, const char* func, const int 
         printf("Capacity of stack - %d\n", stk->capacity);
         printf("Cursor on - %d\n", stk->size);
         printf("Hash = %lu\n", stk->hash);
+        printf("Errors:\n");
+        error_show(stk);
+        printf("\n");
 
         for(int i = 0; i < stk->capacity; i++) {
             if(stk->data[i] == VOID_ELEM)
@@ -94,6 +97,16 @@ error_type stack_dump(Stack* stk, const char* file, const char* func, const int 
     }
 
     assert(0 && "fallthrough");
+}
+
+error_type print_stack(Stack* stk) {
+    for(int i = 0; i < stk->capacity; i++) {
+        if(stk->data[i] == VOID_ELEM)
+            printf("[%d] = (void)\n", i);
+        else
+            printf("[%d] = %d\n", i, stk->data[i]);
+    }
+    return NO_ERR;
 }
 
 error_type print_error(error_type error) {
@@ -121,6 +134,7 @@ error_type put_error(Stack* stk, error_type error) {
     if(stk == NULL)
         return NULL_PTR_ERR;
     stk->errors |= error;
+    stk->hash = hasher(stk);
     return NO_ERR;
 }
 
@@ -137,6 +151,9 @@ int get_error(Stack* stk) {
         counter++;
     } else if (stk->data == NULL) {
         put_error(stk, MEM_ALLOC_ERR);
+        counter++;
+    } else if(stk->hash != hasher(stk)) {
+        put_error(stk, STACK_HASH_ERR);
         counter++;
     }
 
@@ -194,5 +211,64 @@ error_type hash_checker(Stack* stk) {
     if(stk->hash == hasher(stk))
         return NO_ERR;
     return STACK_HASH_ERR;
+}
+
+error_type error_show(Stack* stk) {
+    int tmp = stk->errors;
+    tmp >>= 1;
+    if(tmp & 1)
+        printf("Memory allocation error\n");
+    tmp >>= 1;
+    if (tmp & 1)
+        printf("Null ptr error\n");
+    tmp >>= 1;
+    if (tmp & 1)
+        printf("Out of index error\n");
+    tmp >>= 1;
+    if (tmp & 1)
+        printf("Out of index error\n");
+    tmp >>= 1;
+    if (tmp & 1)
+        printf("Critical error\n");
+    tmp >>= 1;
+    if (tmp & 1)
+        printf("Stack canary error\n");
+    tmp >>= 1;
+    if (tmp & 1)
+        printf("Stack size error\n");
+    tmp >>= 1;
+    if (tmp & 1)
+        printf("Stack hash error\n"
+        "expected - %lu hash - %lu\n", stk->hash, hasher(stk));
+    return NO_ERR;
+}
+
+int check_error (Stack* stk) {
+    int tmp = stk->errors;
+    tmp >>= 1;
+    if(tmp & 1)
+        return 1;
+    tmp >>= 1;
+    if (tmp & 1)
+        return 1;
+    tmp >>= 1;
+    if (tmp & 1)
+        return 1;
+    tmp >>= 1;
+    if (tmp & 1)
+        return 1;
+    tmp >>= 1;
+    if (tmp & 1)
+        return 1;
+    tmp >>= 1;
+    if (tmp & 1)
+        return 1;
+    tmp >>= 1;
+    if (tmp & 1)
+        return 1;
+    tmp >>= 1;
+    if (tmp & 1)
+        return 1;
+    return 0;
 }
 

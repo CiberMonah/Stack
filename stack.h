@@ -61,6 +61,9 @@ error_type put_error(Stack* stk, error_type error);
 int get_error(Stack* stk);
 unsigned long hasher (Stack* stk);
 error_type hash_checker(Stack* stk);
+error_type error_show(Stack* stk);
+error_type print_stack(Stack* stk);
+int check_error (Stack* stk);
 
 
 #endif // STACK_H_INCLUDED
