@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #define STK_DUMP(stk) ({                                                \
     stack_dump((stk), __FILE__, __PRETTY_FUNCTION__, __LINE__);         \
     })
@@ -44,7 +45,8 @@ enum error_type {
     STACK_IS_NOT_EXIST = 1 << 4,
     CRITICAL_ERR = 1 << 5,
     STACK_CANARY_ERR = 1 << 6,
-    STACK_SIZE_ERR = 1 << 7
+    STACK_SIZE_ERR = 1 << 7,
+    STACK_HASH_ERR = 1 << 8
 };
 
 error_type stack_ctor(Stack* stk, const char* name, int line, const char* func, const char* file);
@@ -57,7 +59,8 @@ error_type check_canaries(Stack* stk);
 error_type stack_resize_capacity(Stack* stk);
 error_type put_error(Stack* stk, error_type error);
 int get_error(Stack* stk);
-unsigned long long int hasher (Stack* stk);
+unsigned long long hasher (Stack* stk);
+error_type hash_checker(Stack* stk);
 
 
 #endif // STACK_H_INCLUDED
