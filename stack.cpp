@@ -244,31 +244,13 @@ error_type error_show(Stack* stk) {
 }
 
 int check_error (Stack* stk) {
-    int tmp = stk->errors;
-    tmp >>= 1;
-    if(tmp & 1)
-        return 1;
-    tmp >>= 1;
-    if (tmp & 1)
-        return 1;
-    tmp >>= 1;
-    if (tmp & 1)
-        return 1;
-    tmp >>= 1;
-    if (tmp & 1)
-        return 1;
-    tmp >>= 1;
-    if (tmp & 1)
-        return 1;
-    tmp >>= 1;
-    if (tmp & 1)
-        return 1;
-    tmp >>= 1;
-    if (tmp & 1)
-        return 1;
-    tmp >>= 1;
-    if (tmp & 1)
-        return 1;
+    int tmp = stk->errors >> 1;
+    for(int i = 0; i < number_of_errors; i++) {
+        if (tmp & 1)
+            return 1;
+        else
+            tmp >>= 1;
+    }
     return 0;
 }
 

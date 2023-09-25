@@ -41,7 +41,7 @@ struct Stack {
     unsigned long right_canary = RIGHT_PARROT;
 };
 
-
+const int number_of_errors = 8;
 enum error_type {
     NO_ERR = 1 << 0,
 
