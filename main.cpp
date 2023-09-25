@@ -14,29 +14,17 @@ int main(void) {
         printf("type 1 to push elem\ntype 2 to pop stack\n");
         switch(getchar()) {
         case'1':
-            if(get_error(&stk) != 0) {
-                STK_DUMP(&stk);
-                return -1;
-            }
+            DETECT_ERROR;
             printf("Print element to push:\n");
             Elem_t a;
             scanf("%d", &a);
             put_error(&stk, stack_push(&stk, a));
-            if(check_error(&stk) != 0) {
-                STK_DUMP(&stk);
-                return -1;
-            }
+            DETECT_ERROR;
             break;
         case'2':
-            if(check_error(&stk) != 0) {
-                STK_DUMP(&stk);
-                return -1;
-            }
+            DETECT_ERROR;
             put_error(&stk, stack_pop(&stk, &poped));
-            if(check_error(&stk) != 0) {
-                STK_DUMP(&stk);
-                return -1;
-            }
+            DETECT_ERROR;
             printf("\nPoped element - %d\n", poped);
             break;
         default: printf("Wrong key...\n");
@@ -48,9 +36,6 @@ int main(void) {
 
     }
     put_error(&stk, stack_dtor(&stk));
-    if(check_error(&stk) != 0) {
-        STK_DUMP(&stk);
-        return -1;
-    }
+    DETECT_ERROR;
     return 0;
 }

@@ -12,6 +12,12 @@
     stack_ctor((stk), #stk, __LINE__, __PRETTY_FUNCTION__, __FILE__);   \
     })
 
+#define DETECT_ERROR ({                                                 \
+    if(check_error(&stk) != 0) {                                        \
+        STK_DUMP(&stk);                                                 \
+        return -1;                                                      \
+    }})
+
 typedef int Elem_t;
 const unsigned long LEFT_PARROT = 12250030;  //Does not include the digits 0 or 1 in the octal notation of the number
 const unsigned long RIGHT_PARROT = 4831533;  //Does not include the digits 0 or 1 in the octal notation of the number
