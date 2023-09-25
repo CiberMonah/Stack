@@ -13,12 +13,12 @@
     })
 
 typedef int Elem_t;
-const unsigned long long LEFT_PARROT = 12250030;  //Does not include the digits 0 or 1 in the octal notation of the number
-const unsigned long long RIGHT_PARROT = 4831533;  //Does not include the digits 0 or 1 in the octal notation of the number
+const unsigned long LEFT_PARROT = 12250030;  //Does not include the digits 0 or 1 in the octal notation of the number
+const unsigned long RIGHT_PARROT = 4831533;  //Does not include the digits 0 or 1 in the octal notation of the number
 const Elem_t VOID_ELEM = 78787;
 
 struct Stack {
-    unsigned long long left_canary = LEFT_PARROT;
+    unsigned long left_canary = LEFT_PARROT;
 
     Elem_t* data = NULL;
     int size = 0;
@@ -31,8 +31,8 @@ struct Stack {
     const char* file_name = NULL;
     const char* func_name = NULL;
 
-    unsigned long long hash = 0;
-    unsigned long long right_canary = RIGHT_PARROT;
+    unsigned long hash = 0;
+    unsigned long right_canary = RIGHT_PARROT;
 };
 
 
@@ -59,7 +59,7 @@ error_type check_canaries(Stack* stk);
 error_type stack_resize_capacity(Stack* stk);
 error_type put_error(Stack* stk, error_type error);
 int get_error(Stack* stk);
-unsigned long long hasher (Stack* stk);
+unsigned long hasher (Stack* stk);
 error_type hash_checker(Stack* stk);
 
 

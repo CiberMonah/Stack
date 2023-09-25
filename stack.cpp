@@ -1,5 +1,4 @@
 #include "stack.h"
-#include "TXLib.h"
 #include <inttypes.h>
 
 const int MIN_CAPACITY = 5;
@@ -41,9 +40,8 @@ error_type stack_dtor(Stack* stk) {
 
 error_type stack_push(Stack* stk, Elem_t value) {
     if(stk->is_exist == 0) return STACK_IS_NOT_EXIST;
-    error_type err = hash_checker(stk);
-    if(err == STACK_HASH_ERR) {
-        //printf("Hash = %llu\n expected - %llu\n", hasher(stk), stk->hash);
+    if(hash_checker(stk) == STACK_HASH_ERR) {
+        printf("Hash = %lu\n expected - %lu\n", hasher(stk), stk->hash);
         return STACK_HASH_ERR;
     }
     stack_resize_capacity(stk);
@@ -56,6 +54,10 @@ error_type stack_push(Stack* stk, Elem_t value) {
 }
 
 error_type stack_pop(Stack* stk, Elem_t* poped) {
+    if(hash_checker(stk) == STACK_HASH_ERR) {
+        printf("Hash = %lu\n expected - %lu\n", hasher(stk), stk->hash);
+        return STACK_HASH_ERR;
+    }
     if(stk == NULL) return NULL_PTR_ERR;
     if(stk->is_exist == 0) return STACK_IS_NOT_EXIST;
     if(stk->size == 0)
@@ -64,6 +66,7 @@ error_type stack_pop(Stack* stk, Elem_t* poped) {
     *poped = stk->data[(stk->size)];
     stk->data[(stk->size)] = VOID_ELEM;
     if(stack_resize_capacity(stk) == NO_ERR) {
+        stk->hash = hasher(stk);
         return NO_ERR;
     }
     return CRITICAL_ERR;
@@ -79,7 +82,7 @@ error_type stack_dump(Stack* stk, const char* file, const char* func, const int 
         printf("Pointer on data - %p\n", stk->data);
         printf("Capacity of stack - %d\n", stk->capacity);
         printf("Cursor on - %d\n", stk->size);
-        printf("Hash = %llu", stk->hash);
+        printf("Hash = %lu\n", stk->hash);
 
         for(int i = 0; i < stk->capacity; i++) {
             if(stk->data[i] == VOID_ELEM)
@@ -171,17 +174,20 @@ error_type stack_resize_capacity(Stack* stk) {
     return NO_ERR;
 }
 
-unsigned long long  hasher (Stack* stk) {
-    unsigned long long hash = 0;
+unsigned long hasher (Stack* stk) {
+    unsigned long hash = 0;    //to debug
     //printf("sizeof stack%p - %d\n", stk,  sizeof(Stack));
-
-    for(unsigned int i = 0; i < sizeof(Stack) - 16; i++) {
+    unsigned long hash_data = 0;
+    for(int i = 0; i < stk->capacity; i++) {
+        hash_data += *(char*)(stk->data + i);
+    }
+    for(unsigned int i = 9; i < sizeof(Stack) - 17; i++) {
         //printf("first number %p - %d\n", (char*)stk + i, *(unsigned char*)((char*)stk + i));
         //printf("second number %p - %d\n",(char*)stk + i + 1, *(unsigned char*)((char*)stk + i + 1));
-        hash += (*(unsigned char*)((char*)stk + i)) % (*(unsigned char*)((char*)stk + i + 1) + 1);
-        //printf("%d\n", hash);  To debug
+        hash += (*(char*)((char*)stk + i)) + (*(char*)((char*)stk + i + 1));
+        //printf("%lu\n", hash);
     }
-    return hash;
+    return hash + hash_data;
 }
 
 error_type hash_checker(Stack* stk) {
