@@ -178,13 +178,13 @@ unsigned long hasher (Stack* stk) {
     unsigned long hash = 0;    //to debug
     //printf("sizeof stack%p - %d\n", stk,  sizeof(Stack));
     unsigned long hash_data = 0;
-    for(int i = 0; i < stk->capacity; i++) {
-        hash_data += *(char*)(stk->data + i);
+    for(int i = 0; i < stk->capacity - 1; i++) {
+        hash_data += *(char*)(stk->data + i) % 11 + *(char*)(stk->data + i + 1) % 17;
     }
     for(unsigned int i = 9; i < sizeof(Stack) - 17; i++) {
         //printf("first number %p - %d\n", (char*)stk + i, *(unsigned char*)((char*)stk + i));
         //printf("second number %p - %d\n",(char*)stk + i + 1, *(unsigned char*)((char*)stk + i + 1));
-        hash += (*(char*)((char*)stk + i)) + (*(char*)((char*)stk + i + 1));
+        hash += (*(char*)((char*)stk + i)) % 11 + (*(char*)((char*)stk + i + 1) % 17);
         //printf("%lu\n", hash);
     }
     return hash + hash_data;
