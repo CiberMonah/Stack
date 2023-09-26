@@ -8,23 +8,18 @@ int main(void) {
     STK_CTOR(&stk);
     printf("To stop session press s\n");
     while (getchar() != 's') {
-        //stack_dtor(&stk); //use to brake program, and it will detect it:)
         getchar();
         Elem_t poped = VOID_ELEM;
         printf("type 1 to push elem\ntype 2 to pop stack\n");
         switch(getchar()) {
         case'1':
-            DETECT_ERROR;
             printf("Print element to push:\n");
             Elem_t a;
             scanf("%d", &a);
             put_error(&stk, stack_push(&stk, a));
-            DETECT_ERROR;
             break;
         case'2':
-            DETECT_ERROR;
-            put_error(&stk, stack_pop(&stk, &poped));
-            DETECT_ERROR;
+            stack_pop(&stk, &poped) ;
             printf("\nPoped element - %d\n", poped);
             break;
         default: printf("Wrong key...\n");
@@ -36,6 +31,11 @@ int main(void) {
 
     }
     put_error(&stk, stack_dtor(&stk));
-    DETECT_ERROR;
+    if(stack_verificator(&stk) != 0) {
+        if(check_error(&stk) == 1) {
+            STK_DUMP(&stk);
+            abort();
+        }
+    }
     return 0;
 }

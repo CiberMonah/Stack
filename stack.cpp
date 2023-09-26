@@ -4,46 +4,132 @@
 const int MIN_CAPACITY = 5;
 const int POISON = 12321;
 
+static stack_error_type check_canaries(Stack* stk) {
+    if(stk->left_canary == LEFT_PARROT && stk->right_canary == RIGHT_PARROT)
+        return NO_ERR;
 
-error_type stack_ctor(Stack* stk, const char* name, int line, const char* func, const char* file) {
-    if(stk == NULL)
+    return STACK_CANARY_ERR;
+}
+
+static stack_error_type hash_checker(Stack* stk) {
+    if(stk->hash == hasher(stk)) {
+        return NO_ERR;
+    }
+    printf("Ne rovnii hash %lu waited %lu\n", stk->hash, hasher(stk));
+    return STACK_HASH_ERR;
+}
+
+ int stack_verificator(Stack* stk) {
+    int counter = 0;
+
+    assert(stk != NULL);
+    
+    if (stk->is_exist == 0) {
+        put_error(stk, STACK_IS_NOT_EXIST);
+        counter++;
+        stk->hash = hasher(stk);
+    } else if (stk->capacity < 0 || stk->size > stk->capacity) {
+        put_error(stk, STACK_SIZE_ERR);
+        counter++;
+        stk->hash = hasher(stk);
+    } else if (stk->data == NULL) {
+        put_error(stk, MEM_ALLOC_ERR);
+        counter++;
+        stk->hash = hasher(stk);
+    } else if(hash_checker(stk) != NO_ERR) {
+        put_error(stk, STACK_HASH_ERR);
+        counter++;
+        //stk->hash = hasher(stk);
+    } else if(check_canaries(stk) != NO_ERR) {
+        put_error(stk, STACK_CANARY_ERR);
+        counter++;
+        stk->hash = hasher(stk);
+    } else if(stk->size < 0) {
+        put_error(stk, OUT_OF_INDEX_ERR);
+        counter++;
+        stk->hash = hasher(stk);
+    }
+
+    return counter;
+}
+
+static stack_error_type stack_resize_capacity(Stack* stk) {
+    if(stack_verificator(stk) != 0) {
+        if(check_error(stk) == 1) {
+            STK_DUMP(stk);
+            abort();
+        }
+    }
+
+    Elem_t* temp = NULL;
+
+    if ((stk->size == stk->capacity / 2 - 1) && (stk->capacity / 2 >= MIN_CAPACITY)) {
+        temp = (Elem_t*)realloc(stk->data, stk -> capacity  / 2 * sizeof(Elem_t));
+        if(temp == NULL)
+            return MEM_ALLOC_ERR;
+        stk->data = temp;
+        stk->capacity = stk->capacity /  2;
+    } else if(stk->size == stk->capacity - 1) {
+        temp = (Elem_t*)realloc(stk->data, stk->capacity * 2 * sizeof(Elem_t));
+        if(temp == NULL)
+            return MEM_ALLOC_ERR;
+        stk->data = temp;
+        for(int i = 0; i < stk->size + 2; i++)
+            stk->data[stk->size  + i] = VOID_ELEM;
+        stk->capacity *= 2;
+    }
+
+    stk->hash = hasher(stk);
+    return NO_ERR;
+}
+
+stack_error_type stack_ctor(Stack* stk, const char* name, int line, const char* func, const char* file) {
+    if(stk == NULL || name == NULL || func == NULL || file == NULL)
         return NULL_PTR_ERR;
+    if(stk->is_exist == 1) 
+        return CRITICAL_ERR;
+    stk->is_exist  = 1;
+    stk->capacity  = MIN_CAPACITY;
+    stk->size      = 0;
 
-    stk->is_exist = 1;
-    stk->capacity = MIN_CAPACITY;
-    stk->size = 0;
-
-    stk->name = name;
-    stk->line = line;
+    stk->name      = name;
+    stk->line      = line;
     stk->file_name = file;
     stk->func_name = func;
 
     stk->data = (Elem_t*)calloc(MIN_CAPACITY, sizeof(Elem_t));
     if(stk->data == NULL)
         return MEM_ALLOC_ERR;
-
     for(int i = 0; i < stk->capacity; i++)
         stk->data[i] = VOID_ELEM;
-
     stk->hash = hasher(stk);
 
     return NO_ERR;
 }
 
-error_type stack_dtor(Stack* stk) {
-    if(stk->is_exist == 0) return STACK_IS_NOT_EXIST;
+stack_error_type stack_dtor(Stack* stk) {
+    if(stack_verificator(stk) != 0) {
+        if(check_error(stk) == 1) {
+            STK_DUMP(stk);
+            abort();
+        }
+    }
+    stk->is_exist = 0;
     stk->size = POISON;
     stk->capacity = POISON;
     free(stk->data);
+
     return NO_ERR;
 }
 
-error_type stack_push(Stack* stk, Elem_t value) {
-    if(stk->is_exist == 0) return STACK_IS_NOT_EXIST;
-    if(hash_checker(stk) == STACK_HASH_ERR) {
-        printf("Hash = %lu\n expected - %lu\n", hasher(stk), stk->hash);
-        return STACK_HASH_ERR;
+stack_error_type stack_push(Stack* stk, Elem_t value) {
+    if(stack_verificator(stk) != 0) {
+        if(check_error(stk) == 1) {
+            STK_DUMP(stk);
+            abort();
+        }
     }
+
     stack_resize_capacity(stk);
     stk->data[stk->size] = value;
     stk->size += 1;
@@ -53,29 +139,69 @@ error_type stack_push(Stack* stk, Elem_t value) {
     return NO_ERR;
 }
 
-error_type stack_pop(Stack* stk, Elem_t* poped) {
-    if(hash_checker(stk) == STACK_HASH_ERR) {
-        printf("Hash = %lu\n expected - %lu\n", hasher(stk), stk->hash);
-        return STACK_HASH_ERR;
+stack_error_type stack_pop(Stack* stk, Elem_t* poped) {
+    if(stack_verificator(stk) != 0) {
+        if(check_error(stk) == 1) {
+            STK_DUMP(stk);
+            abort();
+        }
     }
-    if(stk == NULL) return NULL_PTR_ERR;
-    if(stk->is_exist == 0) return STACK_IS_NOT_EXIST;
-    if(stk->size == 0)
-        return OUT_OF_INDEX_ERR;
+
     stk->size--;
+    stk->hash = hasher(stk);
+    if(stack_verificator(stk) != 0) {
+        if(check_error(stk) == 1) {
+            STK_DUMP(stk);
+            abort();
+        }
+    }
+
     *poped = stk->data[(stk->size)];
     stk->data[(stk->size)] = VOID_ELEM;
+    stk->hash = hasher(stk);
+    if(stack_verificator(stk) != 0) {
+        if(check_error(stk) == 1) {
+            STK_DUMP(stk);
+            abort();
+        }
+    }
     if(stack_resize_capacity(stk) == NO_ERR) {
-        stk->hash = hasher(stk);
         return NO_ERR;
     }
+
     return CRITICAL_ERR;
 }
 
-error_type stack_dump(Stack* stk, const char* file, const char* func, const int line) {
+static stack_error_type error_show(Stack* stk) {
+    int tmp = stk->errors;
+
+    if(tmp & MEM_ALLOC_ERR)
+        printf("Memory allocation error\n");
+    else if (tmp & NULL_PTR_ERR)
+        printf("Null ptr error\n");
+    else if (tmp & OUT_OF_INDEX_ERR)
+        printf("Out of index error\n");
+    else if (tmp & STACK_IS_NOT_EXIST)
+        printf("Stack is not exist\n");
+    else if (tmp & CRITICAL_ERR)
+        printf("Critical error\n");
+    else if (tmp & STACK_CANARY_ERR)
+        printf("Stack canary error\n");
+    else if (tmp & STACK_SIZE_ERR)
+        printf("Stack size error\n");
+    else if (tmp & STACK_HASH_ERR)
+        printf("Stack hash error\n"
+        "expected - %lu hash - %lu\n", stk->hash, hasher(stk));
+
+    return NO_ERR;     //drugie bity 1 prover
+}
+
+stack_error_type stack_dump(Stack* stk, const char* file, const char* func, const int line) {
     printf("Dump called in file - %s function  - %s on line - %d", file, func, line);
     if(stk->is_exist == 0) {
+
         return STACK_IS_NOT_EXIST;
+
     } else {
         printf("\nPointer on stack named(%s)- %p\n", stk->name, stk);
         printf("Created in file - %s in function - %s on line - %d\n", stk->file_name, stk->func_name, stk->line);
@@ -93,13 +219,14 @@ error_type stack_dump(Stack* stk, const char* file, const char* func, const int 
             else
                 printf("[%d] = %d\n", i, stk->data[i]);
         }
+
         return NO_ERR;
     }
 
     assert(0 && "fallthrough");
 }
 
-error_type print_stack(Stack* stk) {
+stack_error_type print_stack(Stack* stk) {
     for(int i = 0; i < stk->capacity; i++) {
         if(stk->data[i] == VOID_ELEM)
             printf("[%d] = (void)\n", i);
@@ -109,7 +236,7 @@ error_type print_stack(Stack* stk) {
     return NO_ERR;
 }
 
-error_type print_error(error_type error) {
+stack_error_type print_error(stack_error_type error) {
     if(error == MEM_ALLOC_ERR) {
         printf("Memory allocation error\n");
         return error;
@@ -130,7 +257,7 @@ error_type print_error(error_type error) {
     return NO_ERR;
 }
 
-error_type put_error(Stack* stk, error_type error) {
+stack_error_type put_error(Stack* stk, stack_error_type error) {
     if(stk == NULL)
         return NULL_PTR_ERR;
     stk->errors |= error;
@@ -138,119 +265,45 @@ error_type put_error(Stack* stk, error_type error) {
     return NO_ERR;
 }
 
-int get_error(Stack* stk) {
-    int counter = 0;
-
-    if(stk == NULL) {
-        return NULL_PTR_ERR;
-    } else if (stk->is_exist == 0) {
-        put_error(stk, STACK_IS_NOT_EXIST);
-        counter++;
-    } else if (stk->capacity < 0 || stk->size < 0 || stk->size > stk->capacity) {
-        put_error(stk, STACK_SIZE_ERR);
-        counter++;
-    } else if (stk->data == NULL) {
-        put_error(stk, MEM_ALLOC_ERR);
-        counter++;
-    } else if(stk->hash != hasher(stk)) {
-        put_error(stk, STACK_HASH_ERR);
-        counter++;
-    }
-
-    return counter;
-}
-
-error_type check_canaries(Stack* stk) {
-    if(stk->left_canary == LEFT_PARROT && stk->right_canary == RIGHT_PARROT)
-        return NO_ERR;
-
-    return STACK_CANARY_ERR;
-}
-
-error_type stack_resize_capacity(Stack* stk) {
-    if(check_canaries(stk) == STACK_CANARY_ERR) return STACK_CANARY_ERR;
-
-    Elem_t* temp = NULL;
-
-    if ((stk->size == stk->capacity / 2 - 1) && (stk->capacity / 2 >= MIN_CAPACITY)) {
-        temp = (Elem_t*)realloc(stk->data, stk -> capacity  / 2 * sizeof(Elem_t));
-        if(temp == NULL)
-            return MEM_ALLOC_ERR;
-        stk->data = temp;
-        stk->capacity = stk->capacity /  2;
-    } else if(stk->size == stk->capacity - 1) {
-        temp = (Elem_t*)realloc(stk->data, stk->capacity * 2 * sizeof(Elem_t));
-        if(temp == NULL)
-            return MEM_ALLOC_ERR;
-        stk->data = temp;
-        for(int i = 0; i < stk->size + 2; i++)
-            stk->data[stk->size  + i] = VOID_ELEM;
-        stk->capacity *= 2;
-    }
-
-    return NO_ERR;
-}
-
 unsigned long hasher (Stack* stk) {
-    unsigned long hash = 0;    //to debug
+    unsigned long hash = 0;
+    //if we make stk->hash = 0; so we can return new value of hash and rewright stk->hash
+    //because in we will rewright stk->hash to new_hash and compare it wis new hash (always true)
     //printf("sizeof stack%p - %d\n", stk,  sizeof(Stack));
     unsigned long hash_data = 0;
+
     for(int i = 0; i < stk->capacity - 1; i++) {
         hash_data += *(char*)(stk->data + i) % 11 + *(char*)(stk->data + i + 1) % 17;
     }
-    for(unsigned int i = 9; i < sizeof(Stack) - 17; i++) {
+    for(unsigned int i = 0; i < sizeof(Stack) - 17; i++) { 
         //printf("first number %p - %d\n", (char*)stk + i, *(unsigned char*)((char*)stk + i));
         //printf("second number %p - %d\n",(char*)stk + i + 1, *(unsigned char*)((char*)stk + i + 1));
         hash += (*(char*)((char*)stk + i)) % 11 + (*(char*)((char*)stk + i + 1) % 17);
         //printf("%lu\n", hash);
     }
+
     return hash + hash_data;
 }
 
-error_type hash_checker(Stack* stk) {
-    if(stk->hash == hasher(stk))
-        return NO_ERR;
-    return STACK_HASH_ERR;
-}
-
-error_type error_show(Stack* stk) {
-    int tmp = stk->errors;
-    tmp >>= 1;
-    if(tmp & 1)
-        printf("Memory allocation error\n");
-    tmp >>= 1;
-    if (tmp & 1)
-        printf("Null ptr error\n");
-    tmp >>= 1;
-    if (tmp & 1)
-        printf("Out of index error\n");
-    tmp >>= 1;
-    if (tmp & 1)
-        printf("Out of index error\n");
-    tmp >>= 1;
-    if (tmp & 1)
-        printf("Critical error\n");
-    tmp >>= 1;
-    if (tmp & 1)
-        printf("Stack canary error\n");
-    tmp >>= 1;
-    if (tmp & 1)
-        printf("Stack size error\n");
-    tmp >>= 1;
-    if (tmp & 1)
-        printf("Stack hash error\n"
-        "expected - %lu hash - %lu\n", stk->hash, hasher(stk));
-    return NO_ERR;
-}
-
 int check_error (Stack* stk) {
-    int tmp = stk->errors >> 1;
-    for(int i = 0; i < number_of_errors; i++) {
-        if (tmp & 1)
-            return 1;
-        else
-            tmp >>= 1;
+    if(stk == NULL) {
+        put_error(stk, NULL_PTR_ERR);
+        printf("Cant detect because stk is nullptr\n");
+
+        return 1;
     }
-    return 0;
+    if(stk->is_exist == 0) {
+        put_error(stk, STACK_IS_NOT_EXIST);
+        printf("Cant detect because stk is not exist\n");
+
+        return 1;
+    }
+
+    int tmp = stk->errors >> 1;
+
+    if (tmp == 0)
+        return 0;
+    else
+        return 1;
 }
 
