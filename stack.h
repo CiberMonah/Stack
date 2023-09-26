@@ -12,9 +12,9 @@
     stack_ctor((stk), #stk, __LINE__, __PRETTY_FUNCTION__, __FILE__);   \
     })
 typedef int Elem_t;
-const unsigned long LEFT_PARROT = 12250030;  //Does not include the digits 0 or 1 in the octal notation of the number
-const unsigned long RIGHT_PARROT = 4831533;  //Does not include the digits 0 or 1 in the octal notation of the number
-const Elem_t VOID_ELEM = 78787;
+const unsigned long LEFT_PARROT = 0xDEDABABA;  //Does not include the digits 0 or 1 in the octal notation of the number
+const unsigned long RIGHT_PARROT = 0x40401367;  //Does not include the digits 0 or 1 in the octal notation of the number
+const Elem_t VOID_ELEM = 99999;
 
 struct Stack {
     unsigned long left_canary = LEFT_PARROT;
