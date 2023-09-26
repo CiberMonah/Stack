@@ -3,11 +3,12 @@
 #include "stack.h"
 
 int main(void) {
-
+    int iter = 0;
     Stack stk;
     STK_CTOR(&stk);
     printf("To stop session press s\n");
     while (getchar() != 's') {
+        iter++;
         getchar();
         Elem_t poped = VOID_ELEM;
         printf("type 1 to push elem\ntype 2 to pop stack\n");
@@ -30,6 +31,7 @@ int main(void) {
         print_stack(&stk);
 
     }
+    if(iter == 0) return 0;
     put_error(&stk, stack_dtor(&stk));
     if(stack_verificator(&stk) != 0) {
         if(check_error(&stk) == 1) {
