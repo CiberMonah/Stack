@@ -15,7 +15,6 @@ static stack_error_type hash_checker(Stack* stk) {
     if(stk->hash == hasher(stk)) {
         return NO_ERR;
     }
-    printf("Ne rovnii hash %lu waited %lu\n", stk->hash, hasher(stk));
     return STACK_HASH_ERR;
 }
 
