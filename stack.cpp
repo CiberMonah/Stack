@@ -25,6 +25,8 @@ static stack_error_type hash_checker(Stack* stk) {
     
     if (stk->is_exist == 0) {
         put_error(stk, STACK_IS_NOT_EXIST);
+        STK_DUMP(stk);
+        abort();
         counter++;
         stk->hash = hasher(stk);
     } else if (stk->capacity < 0 || stk->size > stk->capacity) {
@@ -196,11 +198,10 @@ static stack_error_type error_show(Stack* stk) {
 }
 
 stack_error_type stack_dump(Stack* stk, const char* file, const char* func, const int line) {
-    printf("Dump called in file - %s function  - %s on line - %d", file, func, line);
+    printf("Dump called in file - %s function  - %s on line - %d\n", file, func, line);
     if(stk->is_exist == 0) {
-
+        printf("Stack is not exist\n");
         return STACK_IS_NOT_EXIST;
-
     } else {
         printf("\nPointer on stack named(%s)- %p\n", stk->name, stk);
         printf("Created in file - %s in function - %s on line - %d\n", stk->file_name, stk->func_name, stk->line);
@@ -259,6 +260,11 @@ stack_error_type print_error(stack_error_type error) {
 stack_error_type put_error(Stack* stk, stack_error_type error) {
     if(stk == NULL)
         return NULL_PTR_ERR;
+    if(stk->is_exist == 0) {
+        stk->errors |= STACK_IS_NOT_EXIST;
+        STK_DUMP(stk);
+        abort();
+    }
     stk->errors |= error;
     stk->hash = hasher(stk);
     return NO_ERR;

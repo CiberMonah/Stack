@@ -17,7 +17,7 @@ int main(void) {
             printf("Print element to push:\n");
             Elem_t a;
             scanf("%d", &a);
-            put_error(&stk, stack_push(&stk, a));
+            stack_push(&stk, a);
             break;
         case'2':
             stack_pop(&stk, &poped) ;
@@ -31,7 +31,7 @@ int main(void) {
         print_stack(&stk);
 
     }
-    if(iter == 0) return 0;
+    if(iter == 0) return 0; //if first chois was finish programm
     put_error(&stk, stack_dtor(&stk));
     if(stack_verificator(&stk) != 0) {
         if(check_error(&stk) == 1) {
