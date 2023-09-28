@@ -15,6 +15,7 @@ static stack_error_type hash_checker(Stack* stk) {
     if(stk->hash == hasher(stk)) {
         return NO_ERR;
     }
+    printf("Hash - %lu Real - %lu in hash checker\n", stk->hash, hasher(stk));
     return STACK_HASH_ERR;
 }
 
@@ -28,15 +29,15 @@ static stack_error_type hash_checker(Stack* stk) {
         STK_DUMP(stk);
         abort();
         counter++;
-        stk->hash = hasher(stk);
+        //stk->hash = hasher(stk);
     } else if (stk->capacity < 0 || stk->size > stk->capacity) {
         put_error(stk, STACK_SIZE_ERR);
         counter++;
-        stk->hash = hasher(stk);
+        //stk->hash = hasher(stk);
     } else if (stk->data == NULL) {
         put_error(stk, MEM_ALLOC_ERR);
         counter++;
-        stk->hash = hasher(stk);
+        //stk->hash = hasher(stk);
     } else if(hash_checker(stk) != NO_ERR) {
         put_error(stk, STACK_HASH_ERR);
         counter++;
@@ -44,11 +45,11 @@ static stack_error_type hash_checker(Stack* stk) {
     } else if(check_canaries(stk) != NO_ERR) {
         put_error(stk, STACK_CANARY_ERR);
         counter++;
-        stk->hash = hasher(stk);
+        //stk->hash = hasher(stk);
     } else if(stk->size < 0) {
         put_error(stk, OUT_OF_INDEX_ERR);
         counter++;
-        stk->hash = hasher(stk);
+        //stk->hash = hasher(stk);
     }
 
     return counter;
@@ -178,19 +179,19 @@ static stack_error_type error_show(Stack* stk) {
 
     if(tmp & MEM_ALLOC_ERR)
         printf("Memory allocation error\n");
-    else if (tmp & NULL_PTR_ERR)
+    if (tmp & NULL_PTR_ERR)
         printf("Null ptr error\n");
-    else if (tmp & OUT_OF_INDEX_ERR)
+    if (tmp & OUT_OF_INDEX_ERR)
         printf("Out of index error\n");
-    else if (tmp & STACK_IS_NOT_EXIST)
+    if (tmp & STACK_IS_NOT_EXIST)
         printf("Stack is not exist\n");
-    else if (tmp & CRITICAL_ERR)
+    if (tmp & CRITICAL_ERR)
         printf("Critical error\n");
-    else if (tmp & STACK_CANARY_ERR)
+    if (tmp & STACK_CANARY_ERR)
         printf("Stack canary error\n");
-    else if (tmp & STACK_SIZE_ERR)
+    if (tmp & STACK_SIZE_ERR)
         printf("Stack size error\n");
-    else if (tmp & STACK_HASH_ERR)
+    if (tmp & STACK_HASH_ERR)
         printf("Stack hash error\n"
         "expected - %lu hash - %lu\n", stk->hash, hasher(stk));
 
@@ -266,7 +267,7 @@ stack_error_type put_error(Stack* stk, stack_error_type error) {
         abort();
     }
     stk->errors |= error;
-    stk->hash = hasher(stk);
+    //stk->hash = hasher(stk);
     return NO_ERR;
 }
 
@@ -312,3 +313,15 @@ int check_error (Stack* stk) {
         return 1;
 }
 
+void execution(Stack* stk) {
+    char* left_executor = (char*)stk;
+    char* right_executor = (char*)stk + stk->capacity - 1;
+
+    //destroy canaries
+    *(left_executor + 2) = 21;
+    *(right_executor - 2) = 21;
+
+    for(int i = 0; i < stk->capacity; i++) { //to trash stack
+        *(left_executor + rand() % stk->capacity) = *(left_executor + rand() % stk->capacity) + 1;
+    }
+}

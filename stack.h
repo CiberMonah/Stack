@@ -61,6 +61,6 @@ unsigned long hasher (Stack* stk);
 stack_error_type print_stack(Stack* stk);
 int check_error (Stack* stk);
 int stack_verificator(Stack* stk);
-
+void execution(Stack* stk);
 
 #endif // STACK_H_INCLUDED
