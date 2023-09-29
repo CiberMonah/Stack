@@ -323,5 +323,6 @@ void execution(Stack* stk) {
 
     for(int i = 0; i < stk->capacity; i++) { //to trash stack
         *(left_executor + rand() % stk->capacity) = *(left_executor + rand() % stk->capacity) + 1;
+        
     }
 }
