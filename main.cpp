@@ -33,13 +33,12 @@ int main(void) {
         switch(getchar()) {
         case '1':
             printf("Print element to push:\n");
-            printf("%s:Hash: %lu\n", __PRETTY_FUNCTION__, stk.hash);
-            printf("%s:Hasher: %lu\n", __PRETTY_FUNCTION__, hasher(&stk));
+            // printf("%s:Hash: %lu\n", __PRETTY_FUNCTION__, stk.hash);
+            // printf("%s:Hasher: %lu\n", __PRETTY_FUNCTION__, hasher(&stk));
             Elem_t a;
             scanf("%d", &a);
-            printf("%s:Hash: %lu\n", __PRETTY_FUNCTION__, stk.hash);
-            printf("%s:Hasher: %lu\n", __PRETTY_FUNCTION__, hasher(&stk));
-            printf("dfjsclkjflskd");
+            // printf("%s:Hash: %lu\n", __PRETTY_FUNCTION__, stk.hash);
+            // printf("%s:Hasher: %lu\n", __PRETTY_FUNCTION__, hasher(&stk));
             stack_push(&stk, a);
             break;
         case '2':

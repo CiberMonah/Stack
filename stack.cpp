@@ -24,8 +24,8 @@ static stack_error_type check_canaries(Stack* stk) {
 
 static stack_error_type hash_checker(Stack* stk) {
 
-    printf("%s:Hash: %lu\n", __PRETTY_FUNCTION__, stk->hash);
-    printf("%s:Hasher: %lu\n", __PRETTY_FUNCTION__, hasher(stk));
+    // printf("%s:Hash: %lu\n", __PRETTY_FUNCTION__, stk->hash);
+    // printf("%s:Hasher: %lu\n", __PRETTY_FUNCTION__, hasher(stk));
 
     if(stk->hash == hasher(stk)) {
         return NO_ERR;
@@ -36,8 +36,8 @@ static stack_error_type hash_checker(Stack* stk) {
 
  int stack_verificator(Stack* stk) {
     int counter = 0;
-    printf("%s:Hash stk ver: %lu\n", __PRETTY_FUNCTION__, stk->hash);
-    printf("%s:Hasher stk ver: %lu\n", __PRETTY_FUNCTION__, hasher(stk));
+    // printf("%s:Hash stk ver: %lu\n", __PRETTY_FUNCTION__, stk->hash);
+    // printf("%s:Hasher stk ver: %lu\n", __PRETTY_FUNCTION__, hasher(stk));
     assert(stk != NULL);
     
     if (stk->is_exist == 0) {
@@ -129,8 +129,8 @@ stack_error_type stack_ctor(Stack* stk, const char* name, int line, const char* 
     for(int i = 0; i < stk->capacity; i++)
         stk->data[i] = VOID_ELEM;
     stk->hash = hasher(stk);
-    printf("%s:Hash: %lu\n", __PRETTY_FUNCTION__, stk->hash);
-    printf("%s:Hasher: %lu\n", __PRETTY_FUNCTION__, hasher(stk));
+    // printf("%s:Hash: %lu\n", __PRETTY_FUNCTION__, stk->hash);
+    // printf("%s:Hasher: %lu\n", __PRETTY_FUNCTION__, hasher(stk));
 
     return NO_ERR;
 }
@@ -157,8 +157,8 @@ stack_error_type stack_push(Stack* stk, Elem_t value) {
     //     printf("%x ", ((uint32_t*)(stk))[i]);
     // }
     //printf("\n");
-    printf("%s:Hash: %lu\n", __PRETTY_FUNCTION__, stk->hash);
-    printf("%s:Hasher: %lu\n", __PRETTY_FUNCTION__, hasher(stk));
+    // printf("%s:Hash: %lu\n", __PRETTY_FUNCTION__, stk->hash);
+    // printf("%s:Hasher: %lu\n", __PRETTY_FUNCTION__, hasher(stk));
 
     if(stack_verificator(stk) != 0) {
         if(check_error(stk) == 1) {
@@ -361,9 +361,11 @@ void execution(Stack* stk) {
     //destroy canaries
     // *(left_executor + 2) = 21;
     // *(right_executor - 2) = 21;
+    printf("Destroing...\n");
     for(int i = 0; i < 1000; i++){
         stack_push(stk, rand() % 100);
     }
+    printf("Destroy finished\n");
     // for(int i = 0; i < stk->capacity; i++) { //to trash stack
     //     *(left_executor + rand() % stk->capacity) = *(left_executor + rand() % stk->capacity) + 1;
         
