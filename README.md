@@ -13,6 +13,7 @@ Then malware starts to rewrite stack
 And rewrite...<br /><br />
 ![CANARY3](https://github.com/CiberMonah/Stack/assets/142305833/e1a3fc05-03c4-4197-9a4a-d758a5d304b1)<br />
 But! Stack can detect if canary is dead and detect malware:)<br />
+![CANARY4](https://github.com/CiberMonah/Stack/assets/142305833/abf863de-9d7c-4be9-9524-393e8d0177e2)<br />
 Everything is good<br />
 # Hash protection
 Our stack look like numbers in a row, so we can calculate another number with special algorythm\n<br />
