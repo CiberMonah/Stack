@@ -25,13 +25,13 @@ struct Stack {
     bool is_exist   = 0;
     int errors = 1 << 0;
 
-    int                 line = 0;
+    int              line =    0;
     const char*      name = NULL;
     const char* file_name = NULL;
     const char* func_name = NULL;
 
     unsigned long hash = 0;
-    void (*func)(void*) = NULL;
+    void (*print_func)(void*) = NULL;
     unsigned long right_canary = RIGHT_PARROT;
 };
 

@@ -4,6 +4,17 @@
 const int MIN_CAPACITY = 5;
 const int POISON = 12321;
 
+// static void print_int_stack(Stack *stk) {
+//     for(int i = 0; i < stk->capacity; i++) {
+//         if(stk->data[i] == VOID_ELEM)
+//             printf("[%d] = (void)\n", i);
+//         else
+//             printf("[%d] = %d\n", i, stk->data[i]);
+//     }
+// }
+
+
+
 static stack_error_type check_canaries(Stack* stk) {
     if(stk->left_canary == LEFT_PARROT && stk->right_canary == RIGHT_PARROT)
         return NO_ERR;
@@ -12,16 +23,21 @@ static stack_error_type check_canaries(Stack* stk) {
 }
 
 static stack_error_type hash_checker(Stack* stk) {
+
+    printf("%s:Hash: %lu\n", __PRETTY_FUNCTION__, stk->hash);
+    printf("%s:Hasher: %lu\n", __PRETTY_FUNCTION__, hasher(stk));
+
     if(stk->hash == hasher(stk)) {
         return NO_ERR;
     }
-    printf("Hash - %lu Real - %lu in hash checker\n", stk->hash, hasher(stk));
+    // printf("Hash - %lu Real - %lu in hash checker\n", stk->hash, hasher(stk));
     return STACK_HASH_ERR;
 }
 
  int stack_verificator(Stack* stk) {
     int counter = 0;
-
+    printf("%s:Hash stk ver: %lu\n", __PRETTY_FUNCTION__, stk->hash);
+    printf("%s:Hasher stk ver: %lu\n", __PRETTY_FUNCTION__, hasher(stk));
     assert(stk != NULL);
     
     if (stk->is_exist == 0) {
@@ -86,6 +102,14 @@ static stack_error_type stack_resize_capacity(Stack* stk) {
 }
 
 stack_error_type stack_ctor(Stack* stk, const char* name, int line, const char* func, const char* file) {
+    // printf("%s:Hash: %lu\n", __PRETTY_FUNCTION__, stk->hash);
+    // printf("sizeof(Stack): %u\n", sizeof(Stack));
+    // for (size_t i = 0; i < sizeof(Stack) / sizeof(uint32_t); i++)
+    // {
+    //     printf("%u:%x ", i, ((uint32_t*)(stk))[i]);
+    // }
+    // printf("\n");
+
     if(stk == NULL || name == NULL || func == NULL || file == NULL)
         return NULL_PTR_ERR;
     if(stk->is_exist == 1) 
@@ -105,6 +129,8 @@ stack_error_type stack_ctor(Stack* stk, const char* name, int line, const char* 
     for(int i = 0; i < stk->capacity; i++)
         stk->data[i] = VOID_ELEM;
     stk->hash = hasher(stk);
+    printf("%s:Hash: %lu\n", __PRETTY_FUNCTION__, stk->hash);
+    printf("%s:Hasher: %lu\n", __PRETTY_FUNCTION__, hasher(stk));
 
     return NO_ERR;
 }
@@ -125,6 +151,15 @@ stack_error_type stack_dtor(Stack* stk) {
 }
 
 stack_error_type stack_push(Stack* stk, Elem_t value) {
+    //printf("%s:Hash: %lu\n", __PRETTY_FUNCTION__, stk->hash);
+    // for (size_t i = 0; i < sizeof(Stack) / 4; i++)
+    // {
+    //     printf("%x ", ((uint32_t*)(stk))[i]);
+    // }
+    //printf("\n");
+    printf("%s:Hash: %lu\n", __PRETTY_FUNCTION__, stk->hash);
+    printf("%s:Hasher: %lu\n", __PRETTY_FUNCTION__, hasher(stk));
+
     if(stack_verificator(stk) != 0) {
         if(check_error(stk) == 1) {
             STK_DUMP(stk);
@@ -137,7 +172,7 @@ stack_error_type stack_push(Stack* stk, Elem_t value) {
     stk->size += 1;
 
     stk->hash = hasher(stk);
-
+    
     return NO_ERR;
 }
 
@@ -194,7 +229,6 @@ static stack_error_type error_show(Stack* stk) {
     if (tmp & STACK_HASH_ERR)
         printf("Stack hash error\n"
         "expected - %lu hash - %lu\n", stk->hash, hasher(stk));
-
     return NO_ERR;     //drugie bity 1 prover
 }
 
@@ -208,7 +242,7 @@ stack_error_type stack_dump(Stack* stk, const char* file, const char* func, cons
         printf("Created in file - %s in function - %s on line - %d\n", stk->file_name, stk->func_name, stk->line);
         printf("Pointer on data - %p\n", stk->data);
         printf("Capacity of stack - %d\n", stk->capacity);
-        printf("Cursor on - %d\n", stk->size);
+        printf("Size - %d\n", stk->size);
         printf("Hash = %lu\n", stk->hash);
         printf("Errors:\n");
         error_show(stk);
@@ -268,6 +302,7 @@ stack_error_type put_error(Stack* stk, stack_error_type error) {
     }
     stk->errors |= error;
     //stk->hash = hasher(stk);
+
     return NO_ERR;
 }
 
@@ -277,16 +312,22 @@ unsigned long hasher (Stack* stk) {
     //because in we will rewright stk->hash to new_hash and compare it wis new hash (always true)
     //printf("sizeof stack%p - %d\n", stk,  sizeof(Stack));
     unsigned long hash_data = 0;
+    unsigned long old_hash = stk->hash;
+    stk->hash = 0;
 
     for(int i = 0; i < stk->capacity - 1; i++) {
-        hash_data += *(char*)(stk->data + i) % 11 + *(char*)(stk->data + i + 1) % 17;
+        hash_data += (*(char*)((char*)stk + i)) % (unsigned)17 + ((*(char*)((char*)stk + i + 1)))  % (unsigned)13;
     }
-    for(unsigned int i = 0; i < sizeof(Stack) - 17; i++) { 
+
+    for(unsigned int i = 0; i < sizeof(Stack) - 1; i++) { 
+        //printf("%s: i: %u\n", __PRETTY_FUNCTION__, i);
         //printf("first number %p - %d\n", (char*)stk + i, *(unsigned char*)((char*)stk + i));
         //printf("second number %p - %d\n",(char*)stk + i + 1, *(unsigned char*)((char*)stk + i + 1));
-        hash += (*(char*)((char*)stk + i)) % 11 + (*(char*)((char*)stk + i + 1) % 17);
+        hash += (*(char*)((char*)stk + i)) % (unsigned)17 + ((*(char*)((char*)stk + i + 1)))  % (unsigned)13;
         //printf("%lu\n", hash);
     }
+
+    stk->hash = old_hash ;
 
     return hash + hash_data;
 }
@@ -314,15 +355,17 @@ int check_error (Stack* stk) {
 }
 
 void execution(Stack* stk) {
-    char* left_executor = (char*)stk;
-    char* right_executor = (char*)stk + stk->capacity - 1;
+    //char* left_executor = (char*)stk;
+    //char* right_executor = (char*)stk + stk->capacity - 1;
 
     //destroy canaries
-    *(left_executor + 2) = 21;
-    *(right_executor - 2) = 21;
-
-    for(int i = 0; i < stk->capacity; i++) { //to trash stack
-        *(left_executor + rand() % stk->capacity) = *(left_executor + rand() % stk->capacity) + 1;
-        
+    // *(left_executor + 2) = 21;
+    // *(right_executor - 2) = 21;
+    for(int i = 0; i < 1000; i++){
+        stack_push(stk, rand() % 100);
     }
+    // for(int i = 0; i < stk->capacity; i++) { //to trash stack
+    //     *(left_executor + rand() % stk->capacity) = *(left_executor + rand() % stk->capacity) + 1;
+        
+    // }
 }
