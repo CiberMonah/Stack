@@ -316,14 +316,14 @@ unsigned long hasher (Stack* stk) {
     stk->hash = 0;
 
     for(int i = 0; i < stk->capacity - 1; i++) {
-        hash_data += (*(char*)((char*)stk + i)) % (unsigned)17 + ((*(char*)((char*)stk + i + 1)))  % (unsigned)13;
+        hash_data += (*(char*)((char*)stk + i)) % 7 + ((*(char*)((char*)stk + i + 1)))  % 9;
     }
 
     for(unsigned int i = 0; i < sizeof(Stack) - 1; i++) { 
         //printf("%s: i: %u\n", __PRETTY_FUNCTION__, i);
         //printf("first number %p - %d\n", (char*)stk + i, *(unsigned char*)((char*)stk + i));
         //printf("second number %p - %d\n",(char*)stk + i + 1, *(unsigned char*)((char*)stk + i + 1));
-        hash += (*(char*)((char*)stk + i)) % (unsigned)17 + ((*(char*)((char*)stk + i + 1)))  % (unsigned)13;
+        hash += (*(char*)((char*)stk + i)) % 7 + ((*(char*)((char*)stk + i + 1)))  % 9;
         //printf("%lu\n", hash);
     }
 
@@ -362,9 +362,10 @@ void execution(Stack* stk) {
     // *(left_executor + 2) = 21;
     // *(right_executor - 2) = 21;
     printf("Destroing...\n");
-    for(int i = 0; i < 1000; i++){
+    for(int i = 0; i < 10; i++){
         stack_push(stk, rand() % 100);
     }
+
     printf("Destroy finished\n");
     // for(int i = 0; i < stk->capacity; i++) { //to trash stack
     //     *(left_executor + rand() % stk->capacity) = *(left_executor + rand() % stk->capacity) + 1;
