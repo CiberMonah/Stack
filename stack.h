@@ -1,4 +1,4 @@
-    #ifndef STACK_H_INCLUDED
+#ifndef STACK_H_INCLUDED
 #define STACK_H_INCLUDED
 #include <assert.h>
 #include <stdio.h>
@@ -15,7 +15,7 @@
 typedef int Elem_t;
 const unsigned long LEFT_PARROT  = 0xDEDABABA;
 const unsigned long RIGHT_PARROT = 0x40401367;
-const Elem_t VOID_ELEM = 99999;
+const Elem_t VOID_ELEM = 9996;
 const int CAPACITY_MULTIPLIER = 2;
 const int CAPACITY_GISTERESIS = 2;
 
@@ -48,7 +48,7 @@ struct Stack {
     const char* file_name = NULL;
     const char* func_name = NULL;
 
-    unsigned long hash = 0;
+    long hash = 0;
     void (*print_func)(void*) = NULL;
 
     unsigned long right_canary = RIGHT_PARROT;
@@ -62,7 +62,7 @@ stack_error_type stack_dump(Stack* stk, bool only_data, const char* file, const 
 stack_error_type print_error(stack_error_type error);
 stack_error_type stack_push(Stack* stk, Elem_t value);
 stack_error_type put_error(Stack* stk, stack_error_type error);
-unsigned long hasher (Stack* stk);
+long hasher (Stack* stk);
 stack_error_type print_stack(Stack* stk);
 bool check_error (Stack* stk);
 int stack_verificator(Stack* stk);

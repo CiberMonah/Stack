@@ -132,6 +132,7 @@ stack_error_type stack_push(Stack* stk, Elem_t value) {
         if(check_error(stk) == 1) {
             STK_DUMP(stk);
             return VERIFICATION_ERR;
+            abort();
         }
     }
 
@@ -281,18 +282,18 @@ stack_error_type put_error(Stack* stk, stack_error_type error) {
     return NO_ERR;
 }
 
-unsigned long hasher (Stack* stk) {
+long hasher (Stack* stk) {
     unsigned long hash = 0;
     unsigned long hash_data = 0;
     unsigned long old_hash = stk->hash;
     stk->hash = 0;
 
     for(int i = 0; i < stk->capacity; i++) {
-        hash_data += (*(char*)((char*)stk + i)) << 2 % 17;
+        hash_data += (*(char*)((char*)stk + i)) % 11;
     }
 
     for(unsigned int i = 0; i < sizeof(Stack); i++) { 
-        hash += (*(char*)((char*)stk + i)) << 2 % 17;
+        hash += (*(char*)((char*)stk + i)) % 11;
     }
 
     stk->hash = old_hash ;
@@ -322,9 +323,9 @@ bool check_error(Stack* stk) {
 
 void execution(Stack* stk) {
     printf("Destroying...\n");
-    for(int i = 0; i < 10; i++){
+    for(int i = 0; i < 1000; i++){
         stack_push(stk, rand() % 100);
+        printf("STACK HASH - %lu HASHER - %lu ITERATION - %d\n", stk->hash, hasher(stk), i);
     }
-
     printf("Destroy finished\n");
 }
